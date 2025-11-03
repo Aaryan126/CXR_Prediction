@@ -129,6 +129,10 @@ async def predict(file: UploadFile = File(...)):
         # Get predictions
         predictions, all_probs = predict_diseases(MODEL, input_tensor, DEVICE, threshold=0.5)
 
+        # Convert all probabilities to dictionary
+        from model_utils import CLASS_NAMES
+        all_predictions = {CLASS_NAMES[idx]: float(prob) for idx, prob in enumerate(all_probs)}
+
         # Generate Grad-CAM visualizations for predicted diseases
         gradcam_images = generate_gradcam_visualizations(
             MODEL, input_tensor, original_image, predictions, DEVICE
@@ -141,9 +145,11 @@ async def predict(file: UploadFile = File(...)):
         response = {
             "success": True,
             "predictions": predictions,
+            "all_predictions": all_predictions,
             "gradcam_images": gradcam_images,
             "original_image": original_image_base64,
-            "num_predictions": len(predictions)
+            "num_predictions": len(predictions),
+            "threshold_used": 0.5
         }
 
         logger.info(f"Successfully processed {file.filename} with {len(predictions)} predictions")
@@ -205,6 +211,10 @@ async def predict_with_threshold(file: UploadFile = File(...), threshold: float 
         # Get predictions with custom threshold
         predictions, all_probs = predict_diseases(MODEL, input_tensor, DEVICE, threshold=threshold)
 
+        # Convert all probabilities to dictionary
+        from model_utils import CLASS_NAMES
+        all_predictions = {CLASS_NAMES[idx]: float(prob) for idx, prob in enumerate(all_probs)}
+
         # Generate Grad-CAM visualizations
         gradcam_images = generate_gradcam_visualizations(
             MODEL, input_tensor, original_image, predictions, DEVICE
@@ -217,6 +227,7 @@ async def predict_with_threshold(file: UploadFile = File(...), threshold: float 
         response = {
             "success": True,
             "predictions": predictions,
+            "all_predictions": all_predictions,
             "gradcam_images": gradcam_images,
             "original_image": original_image_base64,
             "threshold_used": threshold,

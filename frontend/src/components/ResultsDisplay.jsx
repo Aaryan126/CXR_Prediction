@@ -2,11 +2,24 @@ import React, { useState } from 'react';
 
 function ResultsDisplay({ results, uploadedImage, onReset }) {
   const [selectedDisease, setSelectedDisease] = useState(null);
+  const [showAllPredictions, setShowAllPredictions] = useState(false);
 
   if (!results) return null;
 
-  const { predictions, gradcam_images, original_image } = results;
+  const { predictions, all_predictions, gradcam_images, original_image, threshold_used } = results;
   const diseaseNames = Object.keys(predictions);
+
+  // Get threshold percentage
+  const thresholdPercent = threshold_used ? (threshold_used * 100).toFixed(0) : '50';
+
+  // Sort all predictions by probability (descending)
+  const sortedAllPredictions = all_predictions
+    ? Object.entries(all_predictions).sort((a, b) => b[1] - a[1])
+    : [];
+
+  console.log('Results:', results);
+  console.log('All predictions:', all_predictions);
+  console.log('Sorted predictions:', sortedAllPredictions);
 
   // Select first disease by default
   const displayDisease = selectedDisease || diseaseNames[0];
@@ -37,7 +50,13 @@ function ResultsDisplay({ results, uploadedImage, onReset }) {
 
       {/* Predictions Summary */}
       <div className="predictions-summary">
-        <h3 className="section-title">Detected Conditions</h3>
+        <div className="section-header">
+          <h3 className="section-title">Detected Conditions</h3>
+          <span className="threshold-badge">Threshold: ≥{thresholdPercent}%</span>
+        </div>
+        <p className="section-description">
+          Showing diseases with confidence above {thresholdPercent}% threshold
+        </p>
         <div className="predictions-grid">
           {diseaseNames.map((disease) => (
             <div
@@ -61,6 +80,68 @@ function ResultsDisplay({ results, uploadedImage, onReset }) {
           ))}
         </div>
       </div>
+
+      {/* Debug Info - Remove this after testing */}
+      {!all_predictions && (
+        <div style={{
+          background: '#fff3cd',
+          border: '1px solid #ffc107',
+          padding: '16px',
+          borderRadius: '8px',
+          marginBottom: '20px'
+        }}>
+          <strong>Debug:</strong> all_predictions is not available in the response.
+          Make sure the backend is updated and returning the all_predictions field.
+        </div>
+      )}
+
+      {/* All Predictions - Expandable */}
+      {sortedAllPredictions.length > 0 ? (
+        <div className="all-predictions-section">
+          <button
+            className="toggle-all-predictions-btn"
+            onClick={() => setShowAllPredictions(!showAllPredictions)}
+          >
+            <span>{showAllPredictions ? 'Hide' : 'Show'} All Disease Probabilities ({sortedAllPredictions.length})</span>
+            <svg
+              className={`toggle-icon ${showAllPredictions ? 'rotated' : ''}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </button>
+
+          {showAllPredictions && (
+            <div className="all-predictions-grid">
+              {sortedAllPredictions.map(([disease, probability], index) => (
+                <div key={disease} className="all-prediction-item">
+                  <div className="all-prediction-rank">{index + 1}</div>
+                  <div className="all-prediction-info">
+                    <div className="all-prediction-name">{disease}</div>
+                    <div className="all-prediction-bar-container">
+                      <div
+                        className="all-prediction-bar"
+                        style={{ width: `${probability * 100}%` }}
+                      />
+                    </div>
+                  </div>
+                  <div className="all-prediction-value">
+                    {(probability * 100).toFixed(2)}%
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      ) : null}
 
       {/* Image Comparison */}
       <div className="image-comparison">

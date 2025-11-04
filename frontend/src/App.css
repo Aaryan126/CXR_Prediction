@@ -31,21 +31,19 @@ body {
 .header {
   background: #ffffff;
   color: #1a202c;
-  padding: 60px 0;
+  padding: 24px 0;
   text-align: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-  border-bottom: 1px solid #e2e8f0;
 }
 
 .title {
-  font-size: 2.5rem;
+  font-size: 1.875rem;
   font-weight: 700;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   color: #2d3748;
 }
 
 .subtitle {
-  font-size: 1.125rem;
+  font-size: 0.9375rem;
   color: #4a5568;
   max-width: 600px;
   margin: 0 auto;
@@ -625,6 +623,14 @@ body {
     #ff0000 100%
   );
   border-radius: 4px;
+}
+
+.heatmap-description {
+  margin-top: 12px;
+  font-size: 0.875rem;
+  color: #4a5568;
+  text-align: center;
+  font-style: italic;
 }
 
 /* View Selector */

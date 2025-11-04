@@ -177,9 +177,9 @@ function ResultsDisplay({ results, uploadedImage, onReset }) {
               />
             </div>
             <div className="heatmap-legend">
-              <span className="legend-label">Low attention</span>
+              <span className="legend-label">Low Attention</span>
               <div className="legend-gradient" />
-              <span className="legend-label">High attention</span>
+              <span className="legend-label">High Attention</span>
             </div>
           </div>
         </div>

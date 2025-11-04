@@ -145,11 +145,10 @@ def apply_heatmap(heatmap, image):
     # Resize heatmap to match image size
     heatmap_resized = cv2.resize(heatmap, (image.size[0], image.size[1]))
 
-    # Invert heatmap
-    heatmap_resized = 1.0 - heatmap_resized
+    # Convert to uint8 (no inversion - red = high attention, blue = low attention)
     heatmap_uint8 = np.uint8(255 * heatmap_resized)
 
-    # Apply colormap (JET)
+    # Apply colormap (JET: blue=low, red=high)
     heatmap_color = cv2.applyColorMap(heatmap_uint8, cv2.COLORMAP_JET)
 
     # Convert PIL image to numpy array

@@ -100,12 +100,6 @@ function App() {
           )}
         </div>
       </main>
-
-      <footer className="footer">
-        <div className="container">
-          <p>Powered by DenseNet-121 and Grad-CAM visualization</p>
-        </div>
-      </footer>
     </div>
   );
 }

@@ -694,19 +694,6 @@ body {
   line-height: 1.6;
 }
 
-/* Footer */
-.footer {
-  background-color: #2d3748;
-  color: white;
-  text-align: center;
-  padding: 24px 0;
-  margin-top: auto;
-}
-
-.footer p {
-  opacity: 0.9;
-}
-
 /* Responsive Design */
 @media (max-width: 768px) {
   .title {

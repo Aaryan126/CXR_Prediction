@@ -31,6 +31,9 @@ htmlcov/
 *.pt
 *.ckpt
 
+# Exception: Include the trained model file for deployment
+!best_model_weighted_loss.pth
+
 # Jupyter Notebook
 .ipynb_checkpoints
 *.ipynb_checkpoints/

@@ -25,9 +25,12 @@ app = FastAPI(
 )
 
 # Configure CORS
+# Get allowed origins from environment variable or use default
+ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "*").split(",")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, specify your frontend URL
+    allow_origins=ALLOWED_ORIGINS,  # Configure via environment variable in production
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -36,7 +39,10 @@ app.add_middleware(
 # Global variables for model
 MODEL = None
 DEVICE = None
-MODEL_PATH = "../best_model_weighted_loss.pth"
+# Try both local and deployed paths
+MODEL_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "best_model_weighted_loss.pth")
+if not os.path.exists(MODEL_PATH):
+    MODEL_PATH = "../best_model_weighted_loss.pth"
 
 
 @app.on_event("startup")

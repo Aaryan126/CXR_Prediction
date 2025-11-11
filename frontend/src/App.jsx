@@ -27,21 +27,37 @@ function App() {
       const imageUrl = URL.createObjectURL(file);
       setUploadedImage(imageUrl);
 
-      // Call API
+      // Call API with timeout (60 seconds for cold starts on free tier)
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 60000);
+
       const response = await fetch(`${API_BASE_URL}/predict`, {
         method: 'POST',
         body: formData,
+        signal: controller.signal,
       });
 
+      clearTimeout(timeoutId);
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || 'Failed to process image');
+        let errorMessage = `Server error: ${response.status} ${response.statusText}`;
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.detail || errorMessage;
+        } catch (e) {
+          // If response body is empty or not JSON, use the status message
+        }
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
       setResults(data);
     } catch (err) {
-      setError(err.message);
+      if (err.name === 'AbortError') {
+        setError('Request timed out. The server may be starting up (this can take 30-60 seconds on first request). Please try again.');
+      } else {
+        setError(err.message);
+      }
       console.error('Error:', err);
     } finally {
       setLoading(false);
